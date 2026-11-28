@@ -123,12 +123,12 @@ h1{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(2.
 /* a soft, blurred copy of the photo fills the page behind everything */
 body::before{
   content:"";position:fixed;inset:-60px;z-index:0;pointer-events:none;
-  background:url("/bg.jpg") center 55% / cover no-repeat;
+  background:url("../public/bg.jpg") center 55% / cover no-repeat;
   filter:blur(28px) brightness(.6) saturate(1.1);
 }
 /* the photo itself, kept clear of the player so faces stay visible */
 .photo{
-  background:url("/bg.jpg") 44% 40% / cover no-repeat;
+  background:url("../public/bg.jpg") 44% 40% / cover no-repeat;
   position:fixed;top:0;right:0;bottom:0;width:36vw;z-index:0;pointer-events:none;
   -webkit-mask-image:linear-gradient(to right,transparent 0,#000 16%);
   mask-image:linear-gradient(to right,transparent 0,#000 16%);
@@ -262,7 +262,7 @@ body{background:#2b211c}
     margin:0;border-radius:0;box-shadow:none;-webkit-mask-image:none;mask-image:none;
     background:
       linear-gradient(rgba(0,0,0,.45) 0, transparent 18%, transparent 55%, rgba(0,0,0,.55) 100%),
-      url("/bg.jpg") 48% 32% / cover no-repeat;
+      url("../public/bg.jpg") 48% 32% / cover no-repeat;
   }
   .layout{margin-top:30vh}
   .stage{margin-top:0}
@@ -312,7 +312,7 @@ h1{animation:riseIn .9s .35s cubic-bezier(.2,.7,.2,1) both}
   .scroll-hint:focus-visible{outline:3px solid #fff;outline-offset:6px;border-radius:8px}
 
   /* the photo dims as the iPod comes up */
-  .photo{background:url("/bg.jpg") 48% 32% / cover no-repeat}
+  .photo{background:url("../public/bg.jpg") 48% 32% / cover no-repeat}
   .photo::before{content:"";position:absolute;inset:0;
     background:linear-gradient(rgba(0,0,0,.45) 0, transparent 18%, transparent 70%, rgba(0,0,0,.45) 100%)}
   .photo::after{content:"";position:absolute;inset:0;background:rgba(18,12,10,.62);opacity:var(--p,0)}
@@ -367,7 +367,7 @@ h1{animation:riseIn .9s .35s cubic-bezier(.2,.7,.2,1) both}
 
   /* small round photo next to the title: tap it to see the photo again */
   .thumb{display:block;flex:none;width:38px;height:38px;border-radius:50%;padding:0;cursor:pointer;
-    border:2px solid rgba(251,243,230,.85);background:url("/bg.jpg") 47% 36% / 260% no-repeat;
+    border:2px solid rgba(251,243,230,.85);background:url("../public/bg.jpg") 47% 36% / 260% no-repeat;
     box-shadow:0 2px 8px rgba(0,0,0,.4);transition:opacity .4s ease,transform .4s ease}
   .thumb:focus-visible{outline:3px solid #fff;outline-offset:3px}
   .is-intro .thumb{opacity:0;transform:scale(.6);pointer-events:none}
