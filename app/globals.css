@@ -1,0 +1,415 @@
+:root{
+  --mood:#5a0a17;
+  --screen:#f39614;
+  --body:#2b2b29;
+  --ink:#1d1a16;
+  --paper:#fbf3e6;
+  --serif:var(--font-serif), "Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;min-height:100%}
+body{
+  background:var(--mood);
+  color:var(--paper);
+  font-family:var(--sans);
+  transition:background-color .7s ease;
+  overflow-x:hidden;
+}
+/* soft paper grain, like the reference */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 60px;position:relative;z-index:1}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:16px 24px}
+h1{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(2.4rem,6vw,3.6rem);line-height:1;margin:0;letter-spacing:-.01em}
+.moods{display:flex;flex-wrap:wrap;gap:8px}
+.moods button{
+  font:inherit;font-size:.95rem;color:var(--paper);background:transparent;cursor:pointer;
+  border:1.5px solid rgba(251,243,230,.45);border-radius:999px;padding:7px 15px;
+}
+.moods button[aria-pressed="true"]{background:var(--screen);border-color:var(--screen);color:var(--ink)}
+.moods button:focus-visible,.wheel button:focus-visible,.tracks button:focus-visible,.links a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+.layout{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:40px;align-items:start;margin-top:36px}
+@media (max-width:760px){.layout{grid-template-columns:1fr}}
+
+/* ---------- the device ---------- */
+.stage{position:relative;width:100%;max-width:400px;margin:0 auto;aspect-ratio:400/720}
+.cables{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ipod{
+  position:absolute;left:19%;right:19%;top:19%;bottom:22%;
+  background:linear-gradient(160deg,#3a3a37 0%,var(--body) 45%,#222220 100%);
+  border-radius:9% / 6%;
+  box-shadow:inset 0 0 0 2px #151513, inset 3px 4px 0 rgba(255,255,255,.08), 6px 10px 18px rgba(0,0,0,.35);
+  display:flex;flex-direction:column;align-items:center;padding:9% 8% 0;
+}
+.screen{
+  width:100%;aspect-ratio:4/3.1;background:var(--screen);position:relative;
+  border-radius:3px;
+  box-shadow:0 0 0 6px #121211, 0 0 0 8px #3a3a37, inset 0 0 18px rgba(120,50,0,.25);
+  color:var(--ink);overflow:hidden;
+}
+.screen .w{position:absolute;top:50%;transform:translateY(-50%);max-width:calc(50% - 34px);font-size:clamp(.7rem,2.8vw,.9rem);overflow-wrap:anywhere;line-height:1.15;text-transform:lowercase}
+.screen .wl{left:8px;text-align:left}
+.screen .wr{right:8px;text-align:right}
+.screen .flower{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;transition:transform .5s ease}
+.screen .meta{position:absolute;left:8px;right:8px;bottom:6px;font-size:.62rem;display:flex;justify-content:space-between;opacity:.75}
+.screen .title{position:absolute;left:8px;right:8px;top:6px;font-size:.62rem;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.wheel{position:relative;width:70%;aspect-ratio:1;margin-top:11%}
+.disc{
+  position:absolute;inset:0;border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%, #0d0d0d 0 13%, #cfd3d6 13.5% 15%, #7d8489 15.5% 20%, #e6e8ea 20.5% 22%, transparent 22.5%),
+    repeating-radial-gradient(circle at 50% 50%, #1b1b1d 0 1.2px, #2a2b2f 1.4px 2.6px),
+    #222;
+  box-shadow:0 0 0 5px #121211, 0 0 0 7px #3a3a37;
+  overflow:hidden;
+}
+.disc::before{ /* holographic sheen */
+  content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 20deg, transparent 0 8%, rgba(160,200,230,.45) 14%, transparent 22%, transparent 55%, rgba(170,210,240,.4) 62%, transparent 70%);
+}
+.disc .sticker{position:absolute;width:17%;height:17%;margin:-8.5% 0 0 -8.5%}
+.playing .disc{animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wheel button{position:absolute;border:0;background:transparent;color:#e8e8e8;cursor:pointer;padding:0;display:grid;place-items:center}
+.wheel .play{left:50%;top:50%;width:26%;height:26%;transform:translate(-50%,-50%);border-radius:50%}
+.wheel .play svg{width:46%;height:46%;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6))}
+.wheel .prev,.wheel .next{top:50%;width:22%;height:30%;transform:translateY(-50%)}
+.wheel .prev{left:-34%}.wheel .next{right:-34%}
+.wheel .prev svg,.wheel .next svg{width:60%;fill:rgba(251,243,230,.7)}
+
+/* ---------- side panel ---------- */
+.panel h2{font-family:var(--serif);font-weight:400;font-size:2.2rem;line-height:1.1;margin:0 0 4px}
+.panel .from{margin:0 0 18px;opacity:.75}
+.player{min-height:0}
+.player iframe{width:100%;height:152px;border:0;border-radius:12px;display:block;margin-bottom:12px}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px}
+.links a{color:var(--ink);background:var(--paper);text-decoration:none;border-radius:999px;padding:9px 16px;font-size:.92rem}
+.links a.alt{background:transparent;color:var(--paper);border:1.5px solid rgba(251,243,230,.45)}
+.tracks{list-style:none;margin:0;padding:0;border-top:1px solid rgba(251,243,230,.25)}
+.tracks li{border-bottom:1px solid rgba(251,243,230,.25)}
+.tracks button{
+  width:100%;text-align:left;font:inherit;color:inherit;background:transparent;border:0;cursor:pointer;
+  display:flex;justify-content:space-between;gap:12px;padding:12px 2px;
+}
+.tracks button span:last-child{opacity:.6;font-size:.85rem;text-align:right}
+.tracks button[aria-current="true"]{color:var(--screen)}
+.tracks .flag{font-size:.75rem;opacity:.7;margin-left:6px}
+.note{font-size:.82rem;opacity:.6;margin-top:18px;line-height:1.5;max-width:46ch}
+@media (prefers-reduced-motion:reduce){.playing .disc{animation:none}body{transition:none}}
+
+/* ---------- added for the Next.js version ---------- */
+.player{min-height:152px;margin-bottom:12px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.18)}
+.player.empty{display:grid;place-items:center;padding:16px;text-align:center}
+.player.empty p{margin:0;opacity:.75;font-size:.92rem;line-height:1.5}
+.player iframe{margin-bottom:0}
+.tracks button span:first-child{display:flex;align-items:center;gap:8px}
+.eq{display:inline-flex;gap:2px;align-items:flex-end;height:12px}
+.eq i{width:3px;background:var(--screen);animation:eq 0.9s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:.2s}.eq i:nth-child(3){animation-delay:.4s}
+@keyframes eq{0%,100%{height:3px}50%{height:12px}}
+@media (prefers-reduced-motion:reduce){.eq i{animation:none;height:8px}}
+.player.video{aspect-ratio:16/9;min-height:0}
+.player.video iframe{width:100%;height:100%;border:0;display:block}
+
+/* ---------- background photo ---------- */
+/* a soft, blurred copy of the photo fills the page behind everything */
+body::before{
+  content:"";position:fixed;inset:-60px;z-index:0;pointer-events:none;
+  background:url("/bg.jpg") center 55% / cover no-repeat;
+  filter:blur(28px) brightness(.6) saturate(1.1);
+}
+/* the photo itself, kept clear of the player so faces stay visible */
+.photo{
+  background:url("/bg.jpg") 44% 40% / cover no-repeat;
+  position:fixed;top:0;right:0;bottom:0;width:36vw;z-index:0;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 16%);
+  mask-image:linear-gradient(to right,transparent 0,#000 16%);
+}
+@media (min-width:761px){
+  .wrap{margin:0;margin-right:36vw;max-width:none;padding-left:clamp(20px,4vw,56px);padding-right:24px}
+  .layout{grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:32px}
+}
+@media (max-width:760px){
+  .photo{position:relative;inset:auto;width:auto;aspect-ratio:4/5;max-height:78vh;margin:22px 0 4px;border-radius:18px;
+    -webkit-mask-image:none;mask-image:none;background-position:center 38%;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+}
+
+/* keep text readable on top of the bright photo, without a colour layer */
+h1,.panel h2,.panel .from,.tracks button,.note{text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 18px rgba(0,0,0,.35)}
+.moods button[aria-pressed="false"],.links a.alt{background:rgba(20,16,14,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.tracks{background:rgba(20,16,14,.28);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:12px;padding:0 12px;border-top:0}
+.tracks li:last-child{border-bottom:0}
+.note{opacity:.85}
+
+/* behind the blurred photo: a warm dark tone that matches it */
+body{background:#2b211c}
+
+/* ---------- phone: photo + player on the first screen ---------- */
+@media (max-width:760px){
+  .wrap{padding-top:20px}
+  h1{font-size:2.3rem}
+  .moods button{padding:6px 13px;font-size:.88rem}
+  .photo{aspect-ratio:auto;height:34vh;min-height:220px;max-height:none;margin:16px 0 0;
+    background-size:135%;background-position:47% 40%}
+  .layout{margin-top:6px;gap:24px}
+  .stage{max-width:300px}
+}
+@media (max-width:760px){
+  .stage{max-width:280px;margin-top:-62px;margin-bottom:-84px;position:relative;z-index:2}
+  .photo{position:relative;z-index:1}
+}
+@media (max-width:760px){
+  .photo{z-index:3}                       /* cable tucks behind the photo */
+  .stage{margin-bottom:-30px}             /* cable end clears the song title */
+  .screen .w{overflow-wrap:normal;font-size:.78rem}
+}
+@media (max-width:760px){
+  .stage{margin-bottom:4px}
+  .screen .w{font-size:.7rem;max-width:calc(50% - 30px)}
+}
+
+/* ---------- video inside the iPod screen ---------- */
+.screen-video{position:absolute;inset:0;z-index:2;opacity:0;pointer-events:none;transition:opacity .4s ease;background:#000}
+.screen-video iframe{width:100%;height:100%;border:0;display:block}
+.ipod.playing .screen-video{opacity:1;pointer-events:auto}
+.screen-msg{position:absolute;left:8px;right:8px;top:6px;font-size:.62rem;opacity:.8;text-align:center}
+
+/* ---------- "Open in Spotify" on the iPod body ---------- */
+.tape-spotify{
+  position:absolute;left:50%;bottom:4.5%;transform:translateX(-50%);
+  font-size:.7rem;letter-spacing:.02em;white-space:nowrap;text-decoration:none;
+  color:#e8e8e8;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;padding:5px 12px;
+}
+.tape-spotify::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#1ed760;margin-right:6px;vertical-align:1px}
+.tape-spotify:hover{background:rgba(255,255,255,.14)}
+.tape-spotify:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+/* the side panel is now just the song list */
+.panel{padding-top:8px}
+
+/* Safari / iPhone: show the video so it can be tapped once to start */
+.ipod.needs-tap .screen-video{opacity:1;pointer-events:auto}
+.tap-hint{position:absolute;left:0;right:0;bottom:0;z-index:3;pointer-events:none;text-align:center;
+  font-size:.62rem;padding:4px 6px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.75))}
+
+/* ---------- play order: in order / shuffle ---------- */
+.order{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.order button{
+  font:inherit;font-size:.82rem;color:var(--paper);cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+  background:rgba(20,16,14,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border:1.5px solid rgba(251,243,230,.35);border-radius:999px;padding:6px 12px;
+}
+.order button[aria-pressed="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.order svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.order button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+/* ---------- ☰ mood menu in the top-right corner ---------- */
+.menu{position:fixed;top:18px;right:18px;z-index:30}
+.menu-btn{
+  font:inherit;font-size:.92rem;color:var(--paper);cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  background:rgba(20,16,14,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1.5px solid rgba(251,243,230,.4);border-radius:999px;padding:8px 14px 8px 11px;
+}
+.menu-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.menu-list{
+  position:absolute;right:0;top:calc(100% + 8px);min-width:200px;display:flex;flex-direction:column;
+  background:rgba(28,22,19,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border:1px solid rgba(251,243,230,.18);border-radius:14px;padding:6px;box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+.menu-list button{
+  font:inherit;font-size:.95rem;color:var(--paper);background:transparent;border:0;cursor:pointer;text-align:left;
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;
+}
+.menu-list button:hover{background:rgba(251,243,230,.08)}
+.menu-list button[aria-current="true"]{color:var(--screen)}
+.menu-list i{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 0 1.5px rgba(251,243,230,.5)}
+.menu-btn:focus-visible,.menu-list button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media (max-width:760px){.screen .flower{width:42px;height:42px;margin:-21px 0 0 -21px}}
+
+/* ---------- laptop & bigger: half and half ---------- */
+/* left half: title, iPod, then the song block · right half: the photo */
+@media (min-width:761px){
+  .photo{width:50vw;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 10%);mask-image:linear-gradient(to right,transparent 0,#000 10%)}
+  .wrap{margin:0;margin-right:50vw;max-width:none;padding:32px clamp(24px,4vw,56px) 56px;
+    display:flex;flex-direction:column;align-items:center}
+  header{width:100%;max-width:520px;justify-content:center}
+  .layout{display:flex;flex-direction:column;align-items:center;width:100%;max-width:520px;margin-top:4px;gap:0}
+  .stage{max-width:340px;margin:-36px auto -70px}
+  .panel{position:relative;z-index:2;width:100%;padding-top:0;
+    background:rgba(20,16,14,.38);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    border:1px solid rgba(251,243,230,.14);border-radius:18px;padding:16px 16px 6px}
+  .panel .order{justify-content:center}
+  .panel .tracks{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0 4px}
+}
+
+/* song words on the little screen never break mid-word */
+.screen .w{overflow-wrap:normal;word-break:keep-all;white-space:nowrap}
+@media (min-width:761px){.stage{max-width:320px;margin:6px auto -66px}}
+
+/* ---------- phone: the photo is the full-screen background, iPod on top ---------- */
+@media (max-width:760px){
+  .photo{
+    position:fixed;inset:0;z-index:0;width:auto;height:auto;min-height:0;max-height:none;aspect-ratio:auto;
+    margin:0;border-radius:0;box-shadow:none;-webkit-mask-image:none;mask-image:none;
+    background:
+      linear-gradient(rgba(0,0,0,.45) 0, transparent 18%, transparent 55%, rgba(0,0,0,.55) 100%),
+      url("/bg.jpg") 48% 32% / cover no-repeat;
+  }
+  .layout{margin-top:30vh}
+  .stage{margin-top:0}
+}
+@media (max-width:760px){
+  header,.layout{position:relative;z-index:2}   /* keep the title and player above the photo */
+  .cable-top{display:none}                       /* no cable across faces */
+}
+
+/* ======================================================================
+   Motion: opening animation, scroll reveal, phone intro
+   ====================================================================== */
+.title-btn{all:unset;cursor:pointer}
+.title-btn:focus-visible{outline:3px solid #fff;outline-offset:4px;border-radius:6px}
+
+@keyframes photoIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:none}}
+@keyframes riseIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+.photo{animation:photoIn 1.4s cubic-bezier(.2,.7,.2,1) both}
+h1{animation:riseIn .9s .35s cubic-bezier(.2,.7,.2,1) both}
+.menu{animation:fadeIn .7s .7s both}
+
+/* things slide up when they scroll into view */
+.reveal{opacity:0;transform:translateY(48px);transition:opacity .8s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.panel.reveal{transition-delay:.12s}
+
+.intro{display:none}
+
+/* screen words: wrap between words only, never mid-word */
+.screen .w{white-space:normal;overflow-wrap:normal;word-break:keep-all}
+
+@media (max-width:760px){
+  html{scroll-snap-type:y proximity}
+  .wrap{scroll-snap-align:start}
+
+  /* first screen: the photo, the title, and a nudge */
+  .intro{display:flex;align-items:flex-end;justify-content:center;position:relative;z-index:2;
+    height:calc(100svh - 120px);padding-bottom:28px}
+  .scroll-hint{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;
+    color:var(--paper);font-size:.9rem;letter-spacing:.08em;text-transform:lowercase;
+    text-shadow:0 1px 4px rgba(0,0,0,.6);animation:fadeIn .8s 1.2s both}
+  .scroll-hint svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+    animation:nudge 1.6s 2s ease-in-out infinite}
+  .scroll-hint:focus-visible{outline:3px solid #fff;outline-offset:6px;border-radius:8px}
+
+  /* the photo dims as the iPod comes up */
+  .photo{background:url("/bg.jpg") 48% 32% / cover no-repeat}
+  .photo::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(rgba(0,0,0,.45) 0, transparent 18%, transparent 70%, rgba(0,0,0,.45) 100%)}
+  .photo::after{content:"";position:absolute;inset:0;background:rgba(18,12,10,.62);opacity:var(--p,0)}
+
+  /* the iPod: big, centred, fills most of the screen */
+  .layout{margin-top:0}
+  .stage{--sw:min(128vw, 64svh);width:var(--sw);max-width:none;margin:0 0 -12svh calc(50% - var(--sw) / 2);
+    scroll-snap-align:center}
+  .screen .w{font-size:.95rem;max-width:calc(50% - 40px)}
+  .screen .meta,.screen .title{font-size:.75rem}
+  .screen .flower{width:52px;height:52px;margin:-26px 0 0 -26px}
+  .tape-spotify{font-size:.82rem;padding:6px 14px}
+  .cable-top{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .photo,h1,.menu,.scroll-hint,.scroll-hint svg{animation:none}
+  .reveal{opacity:1;transform:none;transition:none}
+  html{scroll-snap-type:none}
+}
+@media (max-width:760px){
+  .stage{--sw:min(112vw, 56svh)}
+  .panel{position:relative;z-index:3;padding:14px 12px 4px;
+    background:rgba(20,16,14,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    border:1px solid rgba(251,243,230,.14);border-radius:18px}
+  .panel .order{justify-content:center}
+  .panel .tracks{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0 4px}
+}
+@media (max-width:760px){
+  html{scroll-snap-type:y mandatory}
+  .panel{scroll-snap-align:end;margin-bottom:16px}
+}
+@media (max-width:760px) and (prefers-reduced-motion:reduce){html{scroll-snap-type:none}}
+@media (max-width:760px){
+  html{scroll-snap-type:none}
+  .wrap,.stage,.panel{scroll-snap-align:none}
+  header{z-index:5}                     /* the ☰ menu sits above everything */
+  .intro{pointer-events:none}
+  .scroll-hint{pointer-events:auto}
+}
+@media (max-width:760px){.menu-btn{background:rgba(24,18,15,.82)}}
+
+/* ======================================================================
+   Phone: photo screen → player (state-based, no scroll tricks)
+   ====================================================================== */
+.thumb{display:none}
+@media (max-width:760px){
+  html{scroll-snap-type:none}
+  .wrap{overflow-x:clip}                                  /* nothing pokes past the screen edge */
+  header{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;justify-content:flex-start;padding-right:64px}
+  h1{font-size:2.1rem}
+
+  /* small round photo next to the title: tap it to see the photo again */
+  .thumb{display:block;flex:none;width:38px;height:38px;border-radius:50%;padding:0;cursor:pointer;
+    border:2px solid rgba(251,243,230,.85);background:url("/bg.jpg") 47% 36% / 260% no-repeat;
+    box-shadow:0 2px 8px rgba(0,0,0,.4);transition:opacity .4s ease,transform .4s ease}
+  .thumb:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  .is-intro .thumb{opacity:0;transform:scale(.6);pointer-events:none}
+
+  /* ☰ menu: just the icon on phones, so it never runs off the edge */
+  .menu{top:16px;right:16px}
+  .menu-btn{padding:10px;background:rgba(24,18,15,.82)}
+  .menu-btn span{display:none}
+
+  /* the photo screen: "scroll down" right in the middle */
+  .intro{position:fixed;inset:0;height:auto;padding:0;z-index:4;display:flex;align-items:center;justify-content:center;
+    pointer-events:none;transition:opacity .5s ease,visibility 0s linear 0s}
+  .is-player .intro{opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+
+  /* the photo dims when the player comes up */
+  .photo::after{opacity:0;transition:opacity .8s ease}
+  .is-player .photo::after{opacity:1}
+
+  /* the player rises into place in one smooth move */
+  .layout{margin-top:0;transition:transform .85s cubic-bezier(.2,.75,.2,1),opacity .6s ease,visibility 0s linear 0s}
+  .is-intro .layout{transform:translateY(65vh);opacity:0;visibility:hidden;pointer-events:none;
+    transition:transform .6s cubic-bezier(.4,0,.6,1),opacity .4s ease,visibility 0s linear .6s}
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+
+  /* iPod: big, right under the title */
+  .stage{--sw:min(112vw, 56svh);margin-top:calc(var(--sw) * -0.30);margin-bottom:calc(var(--sw) * -0.30)}
+}
+@media (max-width:760px) and (prefers-reduced-motion:reduce){
+  .layout,.is-intro .layout,.intro,.photo::after,.thumb{transition:none}
+}
+
+/* ---------- link to the whole Spotify playlist ---------- */
+.sp-icon{width:18px;height:18px;flex:none}
+.playlist-link{
+  display:flex;align-items:center;justify-content:center;gap:9px;margin:10px 4px 12px;padding:11px 14px;
+  border-radius:999px;text-decoration:none;font-size:.92rem;color:var(--paper);
+  background:rgba(30,215,96,.12);border:1.5px solid rgba(30,215,96,.55);
+}
+.playlist-link:hover{background:rgba(30,215,96,.22)}
+.playlist-link:focus-visible,.menu-playlist:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.menu-playlist{
+  display:flex;align-items:center;gap:10px;margin-top:4px;padding:11px 12px;border-radius:9px;
+  border-top:1px solid rgba(251,243,230,.14);color:var(--paper);text-decoration:none;font-size:.92rem;
+}
+.menu-playlist:hover{background:rgba(251,243,230,.08)}
